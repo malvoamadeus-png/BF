@@ -35,16 +35,41 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     btnText.textContent = "SCANNING NETWORK...";
     spinner.classList.remove('hidden');
 
+    // Desired token count mapping for front-end target display
+    const desiredTokenCount = scope === 'low' ? 30 : scope === 'middle' ? 50 : 100;
+
+    // Initialize 4-step status
+    const stepsUi = [
+        { name: 'Confirm target', status: 'running', message: `Address: ${address}` },
+        { name: 'Fetch tokens', status: 'pending', message: `Target ${desiredTokenCount}` },
+        { name: 'Fetch trades', status: 'pending', message: '' },
+        { name: 'Analyze data', status: 'pending', message: '' }
+    ];
+    logsContainer.appendChild(renderStepEntry(stepsUi[0]));
+    logsContainer.appendChild(renderStepEntry(stepsUi[1]));
+    logsContainer.appendChild(renderStepEntry(stepsUi[2]));
+    logsContainer.appendChild(renderStepEntry(stepsUi[3]));
+
     try {
+        // Update UI: start fetching tokens
+        stepsUi[0].status = 'ok';
+        updateLastLogStatus(logsContainer, 0, stepsUi[0]);
+        stepsUi[1].status = 'running';
+        updateLastLogStatus(logsContainer, 1, stepsUi[1]);
+
         const response = await fetch(`${API_URL}/analyze`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ address, scope, precision })
+            body: JSON.stringify({ address, scope, precision, desiredTokenCount })
         });
         const data = await response.json();
 
+        // Update tokens step from backend info if present
         if (data.steps) {
+            // Filter out any Supabase/database related entries
             data.steps.forEach(step => {
+                const text = `${step.name ?? ''} ${step.message ?? ''}`.toLowerCase();
+                if (text.includes('supabase') || text.includes('database')) return;
                 const logEntry = document.createElement('div');
                 logEntry.className = 'log-entry';
                 
@@ -56,19 +81,36 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
                 logEntry.innerHTML = `<span class="${statusClass}">${icon} ${step.ts ?? step.timestamp ?? ''}</span> ${step.message ?? ''}`;
                 logsContainer.appendChild(logEntry);
             });
+            const fetchTokensStep = data.steps.find(s => (s.name ?? '').toLowerCase().includes('fetch token'));
+            if (fetchTokensStep) {
+                stepsUi[1].status = fetchTokensStep.status === 'failed' ? 'failed' : 'ok';
+                stepsUi[1].message = fetchTokensStep.message ?? stepsUi[1].message;
+                updateLastLogStatus(logsContainer, 1, stepsUi[1]);
+            } else {
+                stepsUi[1].status = 'ok';
+                updateLastLogStatus(logsContainer, 1, stepsUi[1]);
+            }
+            const tradesStep = data.steps.find(s => (s.name ?? '').toLowerCase().includes('fetch trading'));
+            stepsUi[2].status = tradesStep && tradesStep.status === 'failed' ? 'failed' : 'ok';
+            stepsUi[2].message = tradesStep?.message ?? '';
+            updateLastLogStatus(logsContainer, 2, stepsUi[2]);
+            const analyzeStep = data.steps.find(s => (s.name ?? '').toLowerCase().includes('analyze'));
+            stepsUi[3].status = analyzeStep && analyzeStep.status === 'failed' ? 'failed' : 'ok';
+            stepsUi[3].message = analyzeStep?.message ?? '';
+            updateLastLogStatus(logsContainer, 3, stepsUi[3]);
         }
 
         resultsContainer.classList.remove('hidden');
-        if (data.hasBundle && data.suspects.length > 0) {
+        // Filter suspects by score >= 0.2
+        const filtered = (data.suspects || []).filter(s => (s.score ?? 0) >= 0.2);
+        if (filtered.length > 0) {
             resultsTable.classList.remove('hidden');
-            resultsStatus.innerHTML = `<span style="color: var(--accent-red)">⚠ WARNING: ${data.suspects.length} SUSPECT(S) IDENTIFIED</span>`;
-            data.suspects.forEach(suspect => {
+            resultsStatus.innerHTML = `<span style="color: var(--accent-red)">⚠ WARNING: ${filtered.length} SUSPECT(S) IDENTIFIED (Score ≥ 0.2)</span>`;
+            filtered.forEach(suspect => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="color: var(--accent-red); font-weight: bold;">${suspect.address}</td>
                     <td>${(suspect.score ?? 0).toFixed(2)}</td>
-                    <td>${suspect.count ?? 0}</td>
-                    <td>${suspect.totalAnalyzed ?? 0}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -84,3 +126,28 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
         spinner.classList.add('hidden');
     }
 });
+
+function renderStepEntry(step) {
+    const div = document.createElement('div');
+    const statusClass = step.status === 'running' ? 'log-status-running' :
+        step.status === 'ok' ? 'log-status-completed' :
+        step.status === 'failed' ? 'log-status-failed' : 'log-status-pending';
+    const icon = step.status === 'running' ? '[~]' :
+        step.status === 'ok' ? '[✓]' :
+        step.status === 'failed' ? '[X]' : '[ ]';
+    div.className = 'log-entry';
+    div.innerHTML = `<span class="${statusClass}">${icon} ${step.name}</span> ${step.message ?? ''}`;
+    return div;
+}
+
+function updateLastLogStatus(container, index, step) {
+    const entry = container.children[index];
+    if (!entry) return;
+    const statusClass = step.status === 'running' ? 'log-status-running' :
+        step.status === 'ok' ? 'log-status-completed' :
+        step.status === 'failed' ? 'log-status-failed' : 'log-status-pending';
+    const icon = step.status === 'running' ? '[~]' :
+        step.status === 'ok' ? '[✓]' :
+        step.status === 'failed' ? '[X]' : '[ ]';
+    entry.innerHTML = `<span class="${statusClass}">${icon} ${step.name}</span> ${step.message ?? ''}`;
+}
