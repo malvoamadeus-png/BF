@@ -1,4 +1,4 @@
-const API_URL = "http://8.159.141.123:5000";
+const API_URL = "/api";
 
 function scrollToTool() {
     document.getElementById('tool').scrollIntoView({ behavior: 'smooth' });
