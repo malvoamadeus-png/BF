@@ -1,0 +1,46 @@
+关于我使用OKX API来找聪明地址的小号这件事
+
+之前写了一篇文章，研究传说中的 DNF 小号是不是 DNF 的小号？结果回测下来并不能说明是小号。
+
+🤡🤡结果过了两天就自己打脸自己，立马找到了其中两个板上钉钉是小号的证据。
+
+于是在想了另一个极简方案，这里简单分享下流程，不包括具体程序，但你用下面的文案可以直接找AI写完
+
+真正的小号要具备俩特点：
+· 和大号没有资金来往
+· 买的比大号早，这样才能用大号的车头效应给小号抬轿子
+
+所以理论上，只要找哪个地址，每次都在目标地址前买入，出现得越高频，是小号的概率就越大
+
+1️⃣ 目标地址的往期交易
+
+这个很简单，甚至都不需要程序跑也好弄，而使用OKX API的话，
+https://web3.okx.com/priapi/v1/dx/market/v2/pnl/token-list?walletAddress={}&chainId=501&isAsc=false&sortType=1&offset=0&limit=50&filterRisk=true&filterSmallBalance=false&t=1767877350222
+返回结果参考附录1
+
+2️⃣ 遍历每个代币，获取目标地址在目标代币上的最早一笔买入交易
+
+API为https://web3.okx.com/priapi/v1/dx/market/v2/trading-history/filter-list
+
+请求参数包括：{"desc":false,"orderBy":"timestamp","limit":100,"tradingHistoryFilter":{"chainId":"501","tokenContractAddress":"0x...","type":"0","userAddressList":["0x..."]}}
+
+其中tokenContractAddress就是从第一步里面弄出来的第一系列代币
+
+· userAddressList是目标地址
+· chainId的话56是BNB Chain，501是Solana
+· 这一步需要获取该代币下第一笔交易的id，例如“1748422540000!@#104!@#21908433627”
+
+返回结果详见附录2
+
+3️⃣ 按照时间获取前期交易地址
+
+API还是同一个，就是请求参数不一样：
+{"desc":true,"orderBy":"timestamp","limit":100,"dataId":"最早交易的id","tradingHistoryFilter":{"chainId":"501","tokenContractAddress":"0x...","type":"0"}}
+
+至于翻几页就看你了（现在假设为2页）
+
+4️⃣ 查重找小号
+
+通过前面三步，就可以找到目标地址前面的例如100×N个代币出来的交易地址，然后可以程序查重，也可以古法手工Excel清洗。
+
+如果在第三步里，desc选False，可以用来找跟单尾巴，或者某个地址自己的Bundle地址等。

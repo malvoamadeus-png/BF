@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT SHADOW HUNTER | BundleFinder</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="scan-line"></div>
+    <div class="bg-grid"></div>
+
+    <header class="hero-section">
+        <div class="container">
+            <div class="glitch-wrapper">
+                <h1 class="glitch" data-text="PROJECT SHADOW HUNTER">PROJECT SHADOW HUNTER</h1>
+            </div>
+            <p class="subtitle">The "God Eye" for Solana</p>
+            <p class="tagline">Stop trading like a retail pleb. <span class="highlight-red">Start tracking the CABAL.</span></p>
+            <div class="hero-content">
+                <p>Real whales don't just buy. They orchestrate. They use <strong>"Shadow Wallets"</strong> to load up bags seconds before the pump.</p>
+                <p>We don't look for money transfers. We look for <span class="highlight-green">Time-Travel Patterns</span>.</p>
+            </div>
+            <button class="btn-primary btn-large" onclick="scrollToTool()">Join the Hunt ↓</button>
+        </div>
+    </header>
+
+    <section class="info-section">
+        <div class="container">
+            <h2 class="section-title">THE ALPHA LOGIC</h2>
+            <div class="cards-grid">
+                <div class="card info-card">
+                    <h3>👁️ Zero Funding Links</h3>
+                    <p>Insider wallets look completely disconnected on-chain. No direct transfers. Pure stealth.</p>
+                </div>
+                <div class="card info-card">
+                    <h3>🏃 The "Sedan Chair" Effect</h3>
+                    <p>They buy earlier than the main wallet to front-run liquidity and pump the price for the King.</p>
+                </div>
+            </div>
+
+            <h2 class="section-title">HOW WE EXPOSE THEM</h2>
+            <div class="process-steps">
+                <div class="step">
+                    <span class="step-num">01</span>
+                    <h4>Target Acquisition</h4>
+                    <p>Strip-mine PnL history of "Smart Money" using OKX data streams.</p>
+                </div>
+                <div class="step">
+                    <span class="step-num">02</span>
+                    <h4>Genesis Timestamp</h4>
+                    <p>Pinpoint the exact millisecond the whale entered a token.</p>
+                </div>
+                <div class="step">
+                    <span class="step-num">03</span>
+                    <h4>Time Rewind</h4>
+                    <p>Scan for ghosts—unknown wallets that bought immediately before.</p>
+                </div>
+                <div class="step">
+                    <span class="step-num">04</span>
+                    <h4>DNA Matching</h4>
+                    <p>Cross-intersection analysis. If Wallet X appears before the Whale repeatedly... BINGO.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main id="tool" class="tool-section">
+        <div class="container">
+            <h2 class="section-title">INITIATE SCAN</h2>
+            <div class="card control-panel">
+                <div class="input-group">
+                    <label for="address">Target Address (The "Whale")</label>
+                    <input type="text" id="address" value="BHREKFkPQgAtDs8Vb1UfLkUpjG6ScidTjHaCWFuG2AtX" placeholder="Enter Solana/EVM Address">
+                </div>
+                <div class="options-row">
+                    <div class="input-group">
+                        <label for="scope">Scan Scope</label>
+                        <select id="scope">
+                            <option value="low">Low</option>
+                            <option value="middle" selected>Middle</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="precision">Precision Mode</label>
+                        <select id="precision">
+                            <option value="precise" selected>Precise</option>
+                            <option value="broad">Broad</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="analyzeBtn" class="btn-primary btn-block">
+                    <span class="btn-text">ACTIVATE GOD EYE</span>
+                    <span class="loading-spinner hidden"></span>
+                </button>
+            </div>
+
+            <div id="log-container" class="log-container hidden">
+                <h3>> SYSTEM LOG</h3>
+                <div id="logs" class="logs-content"></div>
+            </div>
+
+            <div id="results-container" class="results-container hidden">
+                <h3>> SCAN RESULTS</h3>
+                <div id="results-status" class="status-message"></div>
+                <div class="table-wrapper">
+                    <table id="results-table" class="hidden">
+                        <thead>
+                            <tr>
+                                <th>SUSPECT ADDRESS</th>
+                                <th>SCORE</th>
+                                <th>COUNT</th>
+                                <th>ANALYZED</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>PROJECT SHADOW HUNTER v1.0 // UNMASK THE SHADOWS</p>
+    </footer>
+
+    <script src="/app.js"></script>
+</body>
+</html>
+
