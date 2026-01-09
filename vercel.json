@@ -1,15 +1,13 @@
 {
   "rewrites": [
-    { "source": "/api/analyze", "destination": "http://8.159.141.123:5000/analyze" },
-    { "source": "/analyze", "destination": "http://8.159.141.123:5000/analyze" }
-  ],
-  "cleanUrls": true,
-  "headers": [
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=300" }
-      ]
+      "source": "/api/analyze",
+      "destination": "http://8.159.141.123:5000/analyze"
+    },
+    {
+      "source": "/analyze",
+      "destination": "http://8.159.141.123:5000/analyze"
     }
-  ]
+  ],
+  "cleanUrls": true
 }
